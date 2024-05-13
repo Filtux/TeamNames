@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Page</title>
+</head>
+<body>
+    <h1>Live Page - Teams</h1>
+    <ul id="teamList">
+    </ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        var socket = io();
+    
+        // Function to add new team name to the list
+        function addTeamToList(teamName, teamNumber) {
+            var teamList = document.getElementById('teamList');
+            var listItem = document.createElement('li');
+            listItem.textContent = teamName + ' - ' + teamNumber; // Concatenating strings with +
+            teamList.appendChild(listItem);
+        }
+    
+        // Receive new team name from server and add it to the list
+        socket.on('new_team_added', function(data) {
+            addTeamToList(data.teamName, data.teamNumber);
+        });
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!-- team_input.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Team Input</title>
+</head>
+<body>
+    <form id="teamForm">
+        <input type="text" id="teamName" placeholder="Enter Team Name">
+        <button type="submit">Submit</button>
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        document.getElementById('teamForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var teamName = document.getElementById('teamName').value;
+            socket.emit('new_team', { teamName: teamName });
+            document.getElementById('teamName').value = '';
+        });
+    </script>
+</body>
+</html>
