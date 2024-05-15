@@ -2,30 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Page</title>
+    <link rel="stylesheet" href="/static/styles_live_page.css">
 </head>
 <body>
-    <h1>Live Page - Teams</h1>
-    <ul id="teamList">
-    </ul>
+    <div class="scoreboard-container">
+        <h1>Teams</h1>
+        <ul id="teamList">
+        </ul>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
-        var socket = io();
-    
-        // Function to add new team name to the list
-        function addTeamToList(teamName, teamNumber) {
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        var teams = {};
+
+        // Function to add or update team name in the list
+        function addOrUpdateTeam(teamName, teamNumber) {
             var teamList = document.getElementById('teamList');
-            var listItem = document.createElement('li');
-            listItem.textContent = teamName + ' - ' + teamNumber; // Concatenating strings with +
-            teamList.appendChild(listItem);
+
+            if (teams[teamNumber]) {
+                // Update existing team
+                teams[teamNumber].querySelector('.team-name').textContent = teamName;
+            } else {
+                // Add new team
+                var listItem = document.createElement('li');
+                var teamNumberDiv = document.createElement('div');
+                teamNumberDiv.className = 'team-number';
+                teamNumberDiv.textContent = teamNumber;
+
+                var teamNameSpan = document.createElement('span');
+                teamNameSpan.className = 'team-name';
+                teamNameSpan.textContent = teamName;
+
+                listItem.appendChild(teamNumberDiv);
+                listItem.appendChild(teamNameSpan);
+
+                teamList.appendChild(listItem);
+                teams[teamNumber] = listItem;
+            }
         }
-    
-        // Receive new team name from server and add it to the list
-        socket.on('new_team_added', function(data) {
-            addTeamToList(data.teamName, data.teamNumber);
+
+        // Receive new team name from server and add or update it in the list
+        socket.on('team_submission', function(data) {
+            addOrUpdateTeam(data.teamName, data.teamNumber);
         });
     </script>
-    
 </body>
 </html>

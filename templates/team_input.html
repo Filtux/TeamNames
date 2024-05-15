@@ -2,40 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/static/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Input</title>
+    <link rel="stylesheet" href="/static/styles_team_input.css">
 </head>
 <body>
-    <h1>Team Input</h1>
-    <form id="teamForm">
-        <div class="main-container">
-            <label for="teamName">Team Name:</label>
-            <input type="text" id="teamName" placeholder="Enter Team Name" required>
-            <label for="teamNumber">Team Number:</label>
-            <input type="number" id="teamNumber" placeholder="Enter Team Number" required>
+    <div class="form-container">
+        <h1>Welcome!</h1>
+        <p>Team names can be a maximum of 19 characters.</p>
+        <form id="teamForm">
+            <div>
+                <label for="teamName">Team Name:</label>
+                <input type="text" id="teamName" name="teamName" maxlength="19">
+            </div>
+            <div>
+                <label for="teamNumber">Team Number:</label>
+                <input type="number" id="teamNumber" name="teamNumber" min="1">
+            </div>
             <button type="submit">Submit</button>
-        </div>
+        </form>
+    </div>
 
-    </form>
-
-    <!-- Include Socket.IO -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
-        var socket = io();
-
-        // Function to handle form submission
-        document.getElementById('teamForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting traditionally
-            var teamName = document.getElementById('teamName').value;
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        document.getElementById('teamForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var teamNameInput = document.getElementById('teamName');
+            var teamName = capitalizeFirstLetter(teamNameInput.value);
             var teamNumber = document.getElementById('teamNumber').value;
-            if (teamName.trim() !== '' && teamNumber.trim() !== '') { // Check if both fields are not empty
-                socket.emit('new_team', { teamName: teamName, teamNumber: teamNumber }); // Send team data to server
-                document.getElementById('teamName').value = ''; // Clear input fields
+            if (teamName.length <= 19) {
+                socket.emit('new_team', {teamName: teamName, teamNumber: teamNumber});
+                teamNameInput.value = '';
                 document.getElementById('teamNumber').value = '';
             } else {
-                alert('Please enter both team name and number.'); // Show an alert if any field is empty
+                alert("Team name must be 19 characters or less.");
             }
         });
+    
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
     </script>
+    
 </body>
 </html>

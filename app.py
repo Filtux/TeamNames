@@ -6,7 +6,7 @@ socketio = SocketIO(app)
 
 @app.route('/')
 def index():
-    return render_template('team_input.html') # Default
+    return render_template('team_input.html')
 
 @app.route('/live')
 def live_page():
@@ -16,8 +16,7 @@ def live_page():
 def handle_new_team(data):
     team_name = data['teamName']
     team_number = data['teamNumber']
-    emit('new_team_added', {'teamName': team_name, 'teamNumber': team_number}, broadcast=True)
-
+    emit('team_submission', {'teamName': team_name, 'teamNumber': team_number}, broadcast=True)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
